@@ -5,12 +5,12 @@
 
 unset MYARCH
 MYARCH="armhf"
-LINK="https://github.com/navy1978/351elec-retrorun-flycast32-package/tree/main/packages"
+LINK="https://github.com/navy1978/351elec-retrorun-flycast32-package/tree/main/packages/retrorun_flycast32.tar.gg"
 SHASUM="031db70f0f4c7d0ed1f936ddb7059f7b14dec3ca8869b9bb8fb609ac594f4b49"
 
 INSTALL_PATH="/storage/retrorun_flycast32"
 BINARY="retrorun_flycast32"
-LINKDEST="${INSTALL_PATH}/${MYARCH}/drastic.tar.gz"
+LINKDEST="${INSTALL_PATH}/${MYARCH}/retrorun_flycast32.tar.gg"
 CFG="/storage/.emulationstation/es_systems.cfg"
 START_SCRIPT="$BINARY.sh"
 
