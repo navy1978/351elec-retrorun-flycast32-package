@@ -53,6 +53,8 @@ source /etc/profile
 BINPATH="/usr/bin"
 EXECLOG="/tmp/logs/exec.log"
 cd ${INSTALL_PATH}/${MYARCH}/retrorun_flycast32/
+# we need to create this file for the input (joypad):
+touch /dev/input/by-path/platform-odroidgo2-joypad-event-joystick
 maxperf
 ./retrorun_flycast32 "\$1" >> \$EXECLOG 2>&1
 normperf
