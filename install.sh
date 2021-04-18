@@ -12,6 +12,10 @@ INSTALL_PATH="/storage/retrorun_flycast32"
 BINARY="retrorun_flycast32"
 LINKDEST="${INSTALL_PATH}/${MYARCH}/retrorun_flycast32.tar.gz"
 CFG="/storage/.emulationstation/es_systems.cfg"
+TMP_CFG_DEL="/storage/.emulationstation/es_systems_del.cfg"
+TMP_CFG_ADD1="/storage/.emulationstation/es_systems_tmp1.cfg"
+TMP_CFG_ADD2="/storage/.emulationstation/es_systems_tmp2.cfg"
+TMP_CFG_ADD3="/storage/.emulationstation/es_systems_tmp3.cfg"
 START_SCRIPT="$BINARY.sh"
 
 mkdir -p "${INSTALL_PATH}/${MYARCH}/"
@@ -27,25 +31,23 @@ fi
 tar xvf $LINKDEST -C "${INSTALL_PATH}/${MYARCH}/"
 rm $LINKDEST
 
-if grep -q '<name>dreamcast</name>' "$CFG"
+if grep -q 'retrorun' "$CFG"
 then
-	xmlstarlet ed -L -P -d "/systemList/system[name='dreamcast']" $CFG
+	xmlstarlet ed -d '/systemList/system[name="dreamcast"]/emulators/emulator[@name="retrorun"]' $CFG > $TMP_CFG_DEL
+	rm CFG
+	mv $TMP_CFG_DEL $CFG
 fi
 
 	echo 'Adding retrorun_flycast32 to systems list'
-	xmlstarlet ed --omit-decl --inplace \
-		-s '//systemList' -t elem -n 'system' \
-		-s '//systemList/system[last()]' -t elem -n 'name' -v 'dreamcast'\
-		-s '//systemList/system[last()]' -t elem -n 'fullname' -v 'Sega Dreamcast'\
-		-s '//systemList/system[last()]' -t elem -n 'path' -v '/storage/roms/dreamcast'\
-		-s '//systemList/system[last()]' -t elem -n 'manufacturer' -v 'Sega'\
-		-s '//systemList/system[last()]' -t elem -n 'release' -v '1998'\
-		-s '//systemList/system[last()]' -t elem -n 'hardware' -v 'console'\
-		-s '//systemList/system[last()]' -t elem -n 'extension' -v '.cdi .CDI .gdi .GDI .chd .CHD .zip .ZIP .7z .7Z'\
-		-s '//systemList/system[last()]' -t elem -n 'command' -v "/storage/retrorun_flycast32/$START_SCRIPT %ROM%"\
-		-s '//systemList/system[last()]' -t elem -n 'platform' -v 'dreamcast'\
-		-s '//systemList/system[last()]' -t elem -n 'theme' -v 'dreamcast'\
-		$CFG
+	echo 'Adding emulator...'
+	xmlstarlet ed --subnode "/systemList/system[name='dreamcast']/emulators" --type elem -n emulator -v "" $CFG | xmlstarlet ed --insert "/systemList/system[name='dreamcast']/emulators/emulator[not(@name)]" --type attr -n name -v retrorun > $TMP_CFG_ADD1
+	xmlstarlet ed --subnode "/*/*/*/emulator[@name='retrorun']" --type elem -n cores -v "" $TMP_CFG_ADD1 > $TMP_CFG_ADD2
+	xmlstarlet ed --subnode "/*/*/*/emulator[@name='retrorun']/cores" --type elem -n core -v "flycast" $TMP_CFG_ADD2 | xmlstarlet ed --insert "/*/*/*/emulator[@name='retrorun']/cores/core" --type attr -n default -v true > $TMP_CFG_ADD3
+rm CFG
+rm TMP_CFG_ADD1
+rm TMP_CFG_ADD2
+mv $TMP_CFG_ADD3 $CFG
+
 
 read -d '' content <<EOF
 #!/bin/bash
