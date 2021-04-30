@@ -10,7 +10,7 @@ SHASUM="4858904a6e7e3ba36cd266c707ce6bd0394d53a63626bfb02cd7e1a911609d3d"
 
 INSTALL_PATH="/storage/retrorun"
 BINARY="retrorun"
-LINKDEST="${INSTALL_PATH}/${MYARCH}/retrorun.tar.gz"
+LINKDEST="${INSTALL_PATH}/retrorun.tar.gz"
 CFG="/storage/.emulationstation/es_systems.cfg"
 TMP_CFG_DEL="/storage/.emulationstation/es_systems_del.cfg"
 TMP_CFG_ADD1="/storage/.emulationstation/es_systems_tmp1.cfg"
@@ -18,7 +18,7 @@ TMP_CFG_ADD2="/storage/.emulationstation/es_systems_tmp2.cfg"
 TMP_CFG_ADD3="/storage/.emulationstation/es_systems_tmp3.cfg"
 START_SCRIPT="$BINARY.sh"
 
-mkdir -p "${INSTALL_PATH}/${MYARCH}/"
+mkdir -p "${INSTALL_PATH}/"
 
 curl -Lo $LINKDEST $LINK
 echo 'file can be found in:' $LINKDEST  'checking sha256sum'
@@ -83,7 +83,7 @@ read -d '' content <<EOF
 source /etc/profile
 BINPATH="/usr/bin"
 EXECLOG="/tmp/logs/exec.log"
-cd ${INSTALL_PATH}/${MYARCH}/retrorun_flycast32/
+cd ${INSTALL_PATH}/retrorun/
 # we need to create this file for the input (joypad):
 touch /dev/input/by-path/platform-odroidgo2-joypad-event-joystick
 maxperf
