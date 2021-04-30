@@ -5,8 +5,8 @@
 
 unset MYARCH
 MYARCH="armhf"
-LINK="https://github.com/navy1978/351elec-retrorun-flycast32-package/raw/main/packages/retrorun_flycast32.tar.gz"
-SHASUM="031db70f0f4c7d0ed1f936ddb7059f7b14dec3ca8869b9bb8fb609ac594f4b49"
+LINK="https://github.com/navy1978/351elec-retrorun-flycast32-package/raw/main/packages/retrorun.tar.gz"
+SHASUM="4858904a6e7e3ba36cd266c707ce6bd0394d53a63626bfb02cd7e1a911609d"
 
 INSTALL_PATH="/storage/retrorun_flycast32"
 BINARY="retrorun_flycast32"
