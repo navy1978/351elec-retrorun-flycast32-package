@@ -33,7 +33,7 @@ then
 fi
 echo 'checksum valid'
 echo 'decompressing package...'
-tar xvf $LINKDEST -C "${INSTALL_PATH}/${MYARCH}/"
+tar xvf $LINKDEST -C "${INSTALL_PATH}/"
 rm $LINKDEST
 
 if grep -q 'retrorun' "$CFG"
