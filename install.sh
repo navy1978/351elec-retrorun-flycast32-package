@@ -5,7 +5,7 @@
 
 unset MYARCH
 MYARCH="armhf"
-LINK="https://github.com/navy1978/351elec-retrorun-flycast32-package/tree/main/packages/retrorun_flycast32.tar.gz"
+LINK="https://github.com/navy1978/351elec-retrorun-flycast32-package/raw/main/packages/retrorun_flycast32.tar.gz"
 SHASUM="031db70f0f4c7d0ed1f936ddb7059f7b14dec3ca8869b9bb8fb609ac594f4b49"
 
 INSTALL_PATH="/storage/retrorun_flycast32"
@@ -21,32 +21,61 @@ START_SCRIPT="$BINARY.sh"
 mkdir -p "${INSTALL_PATH}/${MYARCH}/"
 
 curl -Lo $LINKDEST $LINK
+echo 'file can be found in:' $LINKDEST  'checking sha256sum'
 CHECKSUM=$(sha256sum $LINKDEST | awk '{print $1}')
 if [ ! "${SHASUM}" == "${CHECKSUM}" ]
 then
   rm "${LINKDEST}"
+  echo 'checksum failed !'
+  echo 'should be:' $SHASUM
+  echo 'but it is:'$(sha256sum $LINKDEST)
   exit 1
 fi
-
+echo 'checksum valid'
+echo 'decompressing package...'
 tar xvf $LINKDEST -C "${INSTALL_PATH}/${MYARCH}/"
 rm $LINKDEST
 
 if grep -q 'retrorun' "$CFG"
 then
 	xmlstarlet ed -d '/systemList/system[name="dreamcast"]/emulators/emulator[@name="retrorun"]' $CFG > $TMP_CFG_DEL
-	rm CFG
+	rm $CFG
+	mv $TMP_CFG_DEL $CFG
+	xmlstarlet ed -d '/systemList/system[name="naomi"]/emulators/emulator[@name="retrorun"]' $CFG > $TMP_CFG_DEL
+	rm $CFG
+	mv $TMP_CFG_DEL $CFG
+	xmlstarlet ed -d '/systemList/system[name="atomiswave"]/emulators/emulator[@name="retrorun"]' $CFG > $TMP_CFG_DEL
+	rm $CFG
 	mv $TMP_CFG_DEL $CFG
 fi
 
-	echo 'Adding retrorun_flycast32 to systems list'
-	echo 'Adding emulator...'
-	xmlstarlet ed --subnode "/systemList/system[name='dreamcast']/emulators" --type elem -n emulator -v "" $CFG | xmlstarlet ed --insert "/systemList/system[name='dreamcast']/emulators/emulator[not(@name)]" --type attr -n name -v retrorun > $TMP_CFG_ADD1
-	xmlstarlet ed --subnode "/*/*/*/emulator[@name='retrorun']" --type elem -n cores -v "" $TMP_CFG_ADD1 > $TMP_CFG_ADD2
-	xmlstarlet ed --subnode "/*/*/*/emulator[@name='retrorun']/cores" --type elem -n core -v "flycast" $TMP_CFG_ADD2 | xmlstarlet ed --insert "/*/*/*/emulator[@name='retrorun']/cores/core" --type attr -n default -v true > $TMP_CFG_ADD3
-rm CFG
-rm TMP_CFG_ADD1
-rm TMP_CFG_ADD2
+echo 'Adding retrorun_flycast32 to systems list for dreamcast'
+xmlstarlet ed --subnode "/systemList/system[name='dreamcast']/emulators" --type elem -n emulator -v "" $CFG | xmlstarlet ed --insert "/systemList/system[name='dreamcast']/emulators/emulator[not(@name)]" --type attr -n name -v retrorun > $TMP_CFG_ADD1
+xmlstarlet ed --subnode "/systemList/system[name='dreamcast']/emulators/emulator[@name='retrorun']" --type elem -n cores -v "" $TMP_CFG_ADD1 > $TMP_CFG_ADD2
+xmlstarlet ed --subnode "/systemList/system[name='dreamcast']/emulators/emulator[@name='retrorun']/cores" --type elem -n core -v "flycast" $TMP_CFG_ADD2 | xmlstarlet ed --insert "/systemList/system[name='dreamcast']/emulators/emulator[@name='retrorun']/cores/core" --type attr -n default -v true > $TMP_CFG_ADD3
+rm $CFG
+rm $TMP_CFG_ADD1
+rm $TMP_CFG_ADD2
 mv $TMP_CFG_ADD3 $CFG
+
+echo 'Adding retrorun_flycast32 to systems list for naomi'
+xmlstarlet ed --subnode "/systemList/system[name='naomi']/emulators" --type elem -n emulator -v "" $CFG | xmlstarlet ed --insert "/systemList/system[name='naomi']/emulators/emulator[not(@name)]" --type attr -n name -v retrorun > $TMP_CFG_ADD1
+xmlstarlet ed --subnode "/systemList/system[name='naomi']/emulators/emulator[@name='retrorun']" --type elem -n cores -v "" $TMP_CFG_ADD1 > $TMP_CFG_ADD2
+xmlstarlet ed --subnode "/systemList/system[name='naomi']/emulators/emulator[@name='retrorun']/cores" --type elem -n core -v "flycast" $TMP_CFG_ADD2 | xmlstarlet ed --insert "/systemList/system[name='naomi']/emulators/emulator[@name='retrorun']/cores/core" --type attr -n default -v true > $TMP_CFG_ADD3
+rm $CFG
+rm $TMP_CFG_ADD1
+rm $TMP_CFG_ADD2
+mv $TMP_CFG_ADD3 $CFG
+
+echo 'Adding retrorun_flycast32 to systems list for atomiswave'
+xmlstarlet ed --subnode "/systemList/system[name='atomiswave']/emulators" --type elem -n emulator -v "" $CFG | xmlstarlet ed --insert "/systemList/system[name='atomiswave']/emulators/emulator[not(@name)]" --type attr -n name -v retrorun > $TMP_CFG_ADD1
+xmlstarlet ed --subnode "/systemList/system[name='atomiswave']/emulators/emulator[@name='retrorun']" --type elem -n cores -v "" $TMP_CFG_ADD1 > $TMP_CFG_ADD2
+xmlstarlet ed --subnode "/systemList/system[name='atomiswave']/emulators/emulator[@name='retrorun']/cores" --type elem -n core -v "flycast" $TMP_CFG_ADD2 | xmlstarlet ed --insert "/systemList/system[name='atomiswave']/emulators/emulator[@name='retrorun']/cores/core" --type attr -n default -v true > $TMP_CFG_ADD3
+rm $CFG
+rm $TMP_CFG_ADD1
+rm $TMP_CFG_ADD2
+mv $TMP_CFG_ADD3 $CFG
+
 
 
 read -d '' content <<EOF
@@ -63,20 +92,4 @@ normperf
 EOF
 echo "$content" > ${INSTALL_PATH}/${START_SCRIPT}
 chmod +x ${INSTALL_PATH}/${START_SCRIPT}
-if [ ! -d "${INSTALL_PATH}/${MYARCH}/retrorun_flycast32/config" ]
-then
-  mkdir ${INSTALL_PATH}/${MYARCH}/retrorun_flycast32/config
-fi
-cp retrorun_flycast32/retrorun_flycast32.cfg ${INSTALL_PATH}/${MYARCH}/retrorun_flycast32/config 2>/dev/null ||:
 
-### 1.0 compatibility
-if [ -f "/storage/.config/emuelec/scripts/retrorun_flycast32.sh" ]
-then
-  rm -f "/storage/.config/emuelec/scripts/retrorun_flycast32.sh"
-fi
-
-### Only link on 1.0 as 2.0 paths are different.
-if [ -d "/storage/.config/emuelec/scripts" ]
-then
-  ln -sf ${INSTALL_PATH}/${START_SCRIPT} /storage/.config/emuelec/scripts/retrorun_flycast32.sh
-fi
